@@ -1,0 +1,51 @@
+{
+  "name": "smart-portfolio-advisor",
+  "version": "1.0.0",
+  "description": "A comprehensive web-based portfolio management application showcasing modern financial technology development",
+  "main": "index.html",
+  "scripts": {
+    "start": "npm run serve",
+    "serve": "npx http-server -p 8080 -o -c-1",
+    "dev": "npx live-server --port=8080 --open=/index.html",
+    "setup": "npm install && npm run health-check",
+    "health-check": "node scripts/health-check.js",
+    "validate": "node scripts/validate-setup.js",
+    "demo": "npm run serve",
+    "test": "npm run validate && echo '✅ All tests passed!'",
+    "clean": "rm -rf node_modules package-lock.json",
+    "reinstall": "npm run clean && npm install"
+  },
+  "keywords": [
+    "portfolio",
+    "finance",
+    "javascript",
+    "chart.js",
+    "fintech",
+    "investment",
+    "demo",
+    "web-app"
+  ],
+  "author": "Ashish Shirsagar",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Ask149/smart-portfolio-advisor.git"
+  },
+  "homepage": "https://github.com/Ask149/smart-portfolio-advisor#readme",
+  "bugs": {
+    "url": "https://github.com/Ask149/smart-portfolio-advisor/issues"
+  },
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=14.0.0",
+    "npm": ">=6.0.0"
+  },
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead"
+  ]
+}
