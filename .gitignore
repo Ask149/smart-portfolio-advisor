@@ -1,0 +1,39 @@
+# User Data - Never Commit Personal Portfolio Information
+config/user-portfolio.json
+config/user-config.json
+config/user-*.json
+
+# Browser Storage Exports
+portfolio-export-*.json
+backup-*.json
+
+# Logs and Debug Files
+*.log
+debug.log
+error.log
+
+# Operating System Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor Files
+.vscode/settings.json
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary Files
+*.tmp
+*.temp
+.cache/
+
+# Keep Example/Default Files
+!config/default-portfolio.json
+!config/app-config.json
+
+# Documentation
+README.md
+PROJECT-MEMORY-BANK.md
+ENHANCEMENT-SUMMARY.md

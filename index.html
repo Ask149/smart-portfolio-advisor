@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Smart Portfolio Advisor - Enhanced with Database</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <!-- Welcome Screen -->
+    <div id="welcomeScreen" class="welcome-screen">
+        <div class="container">
+            <div class="welcome-content">
+                <h1>Smart Portfolio Advisor</h1>
+                <p class="welcome-subtitle">Your personalized AI-powered portfolio analysis with enhanced database features</p>
+                
+                <div class="welcome-features">
+                    <div class="feature-card">
+                        <h3>📊 Your Real Portfolio</h3>
+                        <p>$106,194 total value with your actual holdings pre-loaded</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>📈 Live Market Data</h3>
+                        <p>Real-time prices with smart caching and offline support</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>🎯 Strategic Opportunities</h3>
+                        <p>Customized insights for your 36.3% MSFT concentration and India timeline</p>
+                    </div>
+                    <div class="feature-card">
+                        <h3>💾 Enhanced Database</h3>
+                        <p>Professional data persistence with history tracking and export/import</p>
+                    </div>
+                </div>
+                
+                <button id="setupPortfolioBtn" class="btn btn--primary btn--lg">Analyze My Portfolio</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Portfolio Setup Form -->
+    <div id="portfolioSetup" class="portfolio-setup hidden">
+        <div class="container">
+            <div class="setup-header">
+                <h2>Portfolio Setup</h2>
+                <p>Your portfolio data will be loaded from our enhanced database system</p>
+                <div class="setup-progress">
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill"></div>
+                    </div>
+                    <span id="progressText">Step 1 of 4</span>
+                </div>
+            </div>
+
+            <!-- Step 1: Robinhood -->
+            <div class="setup-step active" id="step1">
+                <div class="card">
+                    <div class="card__body">
+                        <h3>🏛️ Robinhood Holdings</h3>
+                        <p class="step-description">Your actual Robinhood positions ($8,971.53 invested + $5,099.99 cash)</p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Cash Balance ($)</label>
+                            <input type="number" id="robinhoodCash" class="form-control" placeholder="5099.99" step="0.01">
+                        </div>
+                        
+                        <div class="holdings-section">
+                            <h4>Stock/ETF Holdings</h4>
+                            <div id="robinhoodHoldings">
+                                <!-- Holdings will be populated by JavaScript -->
+                            </div>
+                            <button type="button" class="btn btn--outline btn--sm" onclick="addHolding('robinhood')">+ Add Another Position</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Fidelity -->
+            <div class="setup-step" id="step2">
+                <div class="card">
+                    <div class="card__body">
+                        <h3>🏢 Fidelity & Microsoft ESPP</h3>
+                        <p class="step-description">Microsoft ESPP shares ($19,364.13 value)</p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Microsoft Shares from ESPP</label>
+                            <input type="number" id="msftESPPShares" class="form-control" placeholder="50.5" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">ESPP Average Cost per Share ($)</label>
+                            <input type="number" id="msftESPPCost" class="form-control" placeholder="340.00" step="0.01">
+                        </div>
+                        
+                        <div class="holdings-section">
+                            <h4>Other Fidelity Holdings</h4>
+                            <div id="fidelityHoldings">
+                                <!-- Will be populated if any additional holdings -->
+                            </div>
+                            <button type="button" class="btn btn--outline btn--sm" onclick="addHolding('fidelity')">+ Add Another Position</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: 401k -->
+            <div class="setup-step" id="step3">
+                <div class="card">
+                    <div class="card__body">
+                        <h3>🏦 401(k) Holdings</h3>
+                        <p class="step-description">Microsoft 401k with Target Date 2060 Fund ($42,019.34)</p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Total 401(k) Balance ($)</label>
+                            <input type="number" id="total401k" class="form-control" placeholder="42019.34" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Unrealized Gains This Year ($)</label>
+                            <input type="number" id="employerMatch" class="form-control" placeholder="3561.21" step="0.01">
+                        </div>
+                        
+                        <div class="allocation-section">
+                            <h4>Fund Allocation</h4>
+                            <div id="retirementFunds">
+                                <!-- Will be populated with Target Date fund -->
+                            </div>
+                            <button type="button" class="btn btn--outline btn--sm" onclick="addFund()">+ Add Another Fund</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Settings -->
+            <div class="setup-step" id="step4">
+                <div class="card">
+                    <div class="card__body">
+                        <h3>💼 Investment Strategy</h3>
+                        <p class="step-description">Your investment preferences and timeline</p>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Additional Microsoft RSU Shares</label>
+                            <input type="number" id="msftRSUShares" class="form-control" placeholder="0" step="0.01">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Monthly Investment Capacity ($)</label>
+                            <input type="number" id="monthlyInvestment" class="form-control" placeholder="500" step="50">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Risk Tolerance</label>
+                            <select id="riskTolerance" class="form-control">
+                                <option value="conservative">Conservative - Prefer stable returns</option>
+                                <option value="moderate" selected>Moderate - Balanced growth and stability</option>
+                                <option value="aggressive">Aggressive - Maximum growth potential</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label class="form-label">Investment Timeline</label>
+                            <select id="investmentTimeline" class="form-control">
+                                <option value="short">6-12 months</option>
+                                <option value="medium" selected>Until December 2025 (India return)</option>
+                                <option value="long">3+ years</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="setup-navigation">
+                <button id="prevBtn" class="btn btn--outline" onclick="changeStep(-1)" disabled>Previous</button>
+                <button id="nextBtn" class="btn btn--primary" onclick="changeStep(1)">Next</button>
+                <button id="finishBtn" class="btn btn--primary hidden" onclick="finishSetup()">Start Analysis</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Dashboard -->
+    <div id="mainDashboard" class="main-dashboard hidden">
+        <header class="header">
+            <div class="container flex justify-between items-center py-16">
+                <div>
+                    <h1>Your Portfolio Analysis</h1>
+                    <p>Enhanced with professional database features</p>
+                </div>
+                <div class="header-stats">
+                    <div class="stat-item">
+                        <span class="stat-label">Total Value</span>
+                        <span class="stat-value" id="totalPortfolioValue">$106,194</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label">Daily Change</span>
+                        <span class="stat-value positive" id="dailyChange">+0.8%</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-label last-updated">MSFT Concentration</span>
+                        <span class="stat-value-small">36.3%</span>
+                    </div>
+                </div>
+                <div class="price-update-indicator">
+                    <div class="pulse-dot"></div>
+                    <span>Live Data</span>
+                </div>
+            </div>
+        </header>
+
+        <nav class="main-nav">
+            <div class="container flex gap-8">
+                <a href="#overview" class="nav-link active">Overview</a>
+                <a href="#opportunities" class="nav-link">Strategic Opportunities</a>
+                <a href="#recommendations" class="nav-link">AI Recommendations</a>
+                <a href="#risk" class="nav-link">Risk Analysis</a>
+                <a href="#allocation" class="nav-link">Monthly Allocation</a>
+                <a href="#settings" class="nav-link">Settings</a>
+            </div>
+        </nav>
+
+        <main>
+            <!-- Portfolio Overview -->
+            <section id="overview" class="container py-32">
+                <h2 class="mb-16">Portfolio Overview</h2>
+                <div class="overview-grid">
+                    <div class="overview-stats">
+                        <div class="card stat-card">
+                            <div class="card__body">
+                                <h4>Microsoft Concentration</h4>
+                                <p class="stat-figure" id="msftConcentration">36.3%</p>
+                                <div class="status status--warning" id="concentrationRisk">High Risk</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card stat-card">
+                            <div class="card__body">
+                                <h4>Top Performers</h4>
+                                <p class="stat-figure">NVDA +44%</p>
+                                <div class="status status--success">ARKK +38%</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card stat-card">
+                            <div class="card__body">
+                                <h4>Monthly Investment</h4>
+                                <p class="stat-figure" id="monthlyInvestmentAmount">$500</p>
+                                <div class="status status--success">Available</div>
+                            </div>
+                        </div>
+                        
+                        <div class="card stat-card">
+                            <div class="card__body">
+                                <h4>Data Source</h4>
+                                <p class="stat-figure" id="dataSourceIndicator">Enhanced DB</p>
+                                <div class="status status--success" id="dataSourceStatus">Connected</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h4 class="mb-16">Asset Allocation</h4>
+                            <div class="chart-container" style="position:relative;height:300px;">
+                                <canvas id="allocationChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Strategic Opportunities -->
+            <section id="opportunities" class="container py-32">
+                <h2 class="mb-16">Strategic Opportunities</h2>
+                <p class="section-description mb-24">
+                    Personalized insights for your portfolio based on your December 2025 India timeline and current holdings.
+                </p>
+                <div id="strategicOpportunitiesGrid" class="opportunities-grid">
+                    <!-- Opportunities will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- AI Recommendations -->
+            <section id="recommendations" class="container py-32">
+                <h2 class="mb-16">AI Trading Recommendations</h2>
+                <div id="recommendationsGrid" class="recommendations-grid">
+                    <!-- Recommendations will be populated by JavaScript -->
+                </div>
+            </section>
+
+            <!-- Risk Analysis -->
+            <section id="risk" class="container py-32">
+                <h2 class="mb-16">Risk Management Center</h2>
+                <div class="risk-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h4 class="mb-16">Concentration Risk Analysis</h4>
+                            <div class="chart-container" style="position:relative;height:280px;">
+                                <canvas id="concentrationChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h4 class="mb-16">Portfolio Risk Metrics</h4>
+                            <div class="risk-metrics">
+                                <div class="metric-item">
+                                    <span class="metric-label">MSFT Concentration Risk</span>
+                                    <span class="metric-value">High (36.3%)</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Tax Loss Opportunity</span>
+                                    <span class="metric-value">TEM (-$70)</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">Emergency Fund</span>
+                                    <span class="metric-value">$5K of $10K</span>
+                                </div>
+                                <div class="metric-item">
+                                    <span class="metric-label">India Timeline</span>
+                                    <span class="metric-value">17 months</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Monthly Allocation -->
+            <section id="allocation" class="container py-32">
+                <h2 class="mb-16">Smart Monthly Allocation</h2>
+                <div class="card">
+                    <div class="card__body">
+                        <h4 class="mb-16">Recommended Allocation: <span id="recommendedAmount">$500</span></h4>
+                        <p class="allocation-description mb-16">
+                            Optimized for your December 2025 India timeline and current portfolio concentration.
+                        </p>
+                        <div id="allocationBreakdown" class="allocation-breakdown">
+                            <!-- Allocation suggestions will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings -->
+            <section id="settings" class="container py-32">
+                <h2 class="mb-16">Settings & Configuration</h2>
+                <div class="settings-grid">
+                    <div class="card">
+                        <div class="card__body">
+                            <h4 class="mb-16">Portfolio Actions</h4>
+                            <button class="btn btn--outline mb-8" onclick="editPortfolio()">Edit Portfolio Holdings</button>
+                            <button class="btn btn--primary mb-8" onclick="exportData()">Export Portfolio Data</button>
+                            <button class="btn btn--outline mb-8" onclick="importData()">Import Portfolio Data</button>
+                            <button class="btn btn--outline" onclick="resetPortfolio()">Reset Portfolio</button>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h4 class="mb-16">Database Status</h4>
+                            <div class="settings-info">
+                                <p class="mb-8" id="dbStatus">📊 Database: Connected</p>
+                                <p class="mb-8" id="migrationStatus">🔄 Migration: Complete</p>
+                                <p class="mb-8" id="cacheStatus">💾 Cache: Active</p>
+                                <p class="mb-8" id="historyStatus">📈 History: Tracking</p>
+                                <button class="btn btn--outline btn--sm" onclick="performMaintenance()">Run Maintenance</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h4 class="mb-16">Risk Preferences</h4>
+                            <div class="form-group">
+                                <label class="form-label">Risk Tolerance</label>
+                                <input type="range" id="riskSlider" min="1" max="10" value="6" class="form-control">
+                                <div class="flex justify-between mt-8">
+                                    <span>Conservative</span>
+                                    <span id="riskValue">6</span>
+                                    <span>Aggressive</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="card">
+                        <div class="card__body">
+                            <h4 class="mb-16">Your Portfolio Stats</h4>
+                            <div class="settings-info">
+                                <p class="mb-8">💰 Total Value: $106,194.41</p>
+                                <p class="mb-8">📈 Best Performer: NVDA (+44.48%)</p>
+                                <p class="mb-8">📉 Tax Opportunity: TEM (-28.24%)</p>
+                                <p class="mb-8">🎯 MSFT Concentration: 36.3%</p>
+                                <p class="mb-8">🇮🇳 India Timeline: 17 months</p>
+                                <p class="mb-8">🗃️ Data Source: <span id="portfolioDataSource">Enhanced Database</span></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Hidden file input for import -->
+    <input type="file" id="importFileInput" accept=".json" style="display: none;" onchange="handleFileImport(event)">
+
+    <!-- Include all services before main app -->
+    <script src="src/ConfigLoader.js"></script>
+    <script src="src/DatabaseManager.js"></script>
+    <script src="src/DataMigrationService.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
